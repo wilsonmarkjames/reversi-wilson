@@ -88,7 +88,6 @@ io.on('connection', (socket) => {
                 response.room = room;
                 response.username = username
                 response.count = sockets.length;
-                socket.emit('join_room_response',response);
                 io.of('/').to(room).emit('join_room_response',response);
                 serverLog('join_room succeeded', JSON.stringify(response));
             }
