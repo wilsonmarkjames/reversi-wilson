@@ -126,8 +126,9 @@ socket.on('game_start_response', (payload) =>{
     }
     let newNode = makeStartGameButton();
     $('.socket_'+payload.socket_id+' button').replaceWith(newNode);
+    
     window.location.href = 'game.html?username='+username+'&game_id='+payload.game_id;
-})
+});
 
 socket.on('join_room_response', (payload) =>{
     if((typeof payload == 'undefined') || (payload === null)){
@@ -176,7 +177,7 @@ nodeA.show("fade",1000);
 
 
 
-    let newHTML = '<p class=\'join_room_response\'>'+payload.username+' joined the '+payload.room+'.  (There are '+payload.count+' users in this room)</p>';
+    let newHTML = '<p class=\'join_room_response\'>'+payload.username+' joined the chatroom.  (There are '+payload.count+' users in this room)</p>';
     let newNode = $(newHTML);
     newNode.hide();
     $('#messages').prepend(newNode);
@@ -233,6 +234,103 @@ socket.on('send_chat_message_response', (payload) =>{
     newNode.hide();
     $('#messages').prepend(newNode);
     newNode.show("fade",500);   
+})
+
+let old_board = [
+
+        ['?','?','?','?','?','?','?','?'],
+        ['?','?','?','?','?','?','?','?'],
+        ['?','?','?','?','?','?','?','?'],
+        ['?','?','?','?','?','?','?','?'],
+        ['?','?','?','?','?','?','?','?'],
+        ['?','?','?','?','?','?','?','?'],
+        ['?','?','?','?','?','?','?','?'],
+        ['?','?','?','?','?','?','?','?']
+    ];
+
+socket.on('game_update', (payload) =>{
+    if((typeof payload == 'undefined') || (payload === null)){
+        console.log('Server did not send a payload');
+        return;
+    }
+    if(payload.result === 'fail'){
+        console.log(payload.message);
+        return;
+    }
+
+    let board = payload.game.board;
+    if((typeof board == 'undefined') || (board === null)){
+        console.log('Server did not send a valid board to display');
+        return;
+    }
+
+    /* Update my color */
+
+
+    /* Animate changes to the board */
+    for (let row = 0; row <8; row++){
+        for (let column = 0; column <8; column++){
+                /* Changes */
+                if(old_board[row][column] !== board[row][column]){
+                    let graphic = "";
+                    let altTag = "";
+                    if((old_board[row][column] === '?') && (board[row][column] ===' ')){
+                        graphic = "empty.gif";
+                        altTag = "empty space";
+                    }
+                    else if((old_board[row][column] === '?') && (board[row][column] ==='w')){
+                        graphic = "empty_to_pink.gif";
+                        altTag = "pink token";
+                    }
+                    else if((old_board[row][column] === '?') && (board[row][column] ==='b')){
+                        graphic = "empty_to_blue.gif";
+                        altTag = "blue token";
+                    }
+                    else if((old_board[row][column] === ' ') && (board[row][column] ==='w')){
+                        graphic = "empty_to_pink.gif";
+                        altTag = "pink token";
+                    }
+                    else if((old_board[row][column] === ' ') && (board[row][column] ==='b')){
+                        graphic = "empty_to_blue.gif";
+                        altTag = "blue token";
+                    }
+                    else if((old_board[row][column] === 'w') && (board[row][column] ===' ')){
+                        graphic = "empty.gif";
+                        altTag = "empty space";
+                    }
+                    else if((old_board[row][column] === 'b') && (board[row][column] ===' ')){
+                        graphic = "empty.gif";
+                        altTag = "empty space";
+                    }
+                    else if((old_board[row][column] === 'w') && (board[row][column] ==='b')){
+                        graphic = "pink_to_blue.gif";
+                        altTag = "blue token";
+                    }
+                    else if((old_board[row][column] === 'b') && (board[row][column] ==='w')){
+                        graphic = "blue_to_pink.gif";
+                        altTag = "pink token";
+                    }
+                                        else if((old_board[row][column] === 'b') && (board[row][column] ==='w')){
+                        graphic = "blue_to_pink.gif";
+                        altTag = "pink token";
+                    }
+                    else {
+                        graphic = "error.gif";
+                        altTag = "error";
+                    }
+
+                    const t = Date.now();
+
+                    $('#'+row+'_'+column).html('<img class="img-fluid" src="assets/images/'+graphic+'?time='+t+'" alt="'+altTag+'" />');
+
+                }
+
+        }
+
+
+    }
+    old_board = board;
+
 })
 
 $( () =>{

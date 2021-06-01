@@ -36,7 +36,9 @@ io.on('connection', (socket) => {
 
     }
 
+
     serverLog('a page connected to the server: '+socket.id);
+
 
     socket.on('join_room', (payload) => {
         serverLog('Server received a command', '\'join_room\'',JSON.stringify(payload));
@@ -94,10 +96,13 @@ io.on('connection', (socket) => {
                     }
                 io.of('/').to(room).emit('join_room_response',response);
                 serverLog('join_room succeeded', JSON.stringify(response));
+                if (room !== "Lobby") {
+                    send_game_update(socket,room, 'initial update');
+                }
                 }
             }
         }); 
-    })
+    });
 
     socket.on('invite', (payload) => {
         serverLog('Server received a command', '\'invite\'',JSON.stringify(payload));
@@ -221,7 +226,7 @@ io.on('connection', (socket) => {
                     message:'the user that was uninvited is no longer in the room'
                 }
                 socket.emit('uninvited',response);
-                serverLog('uninvite command failed', JSON.stringify(response));
+                serverLog('uninvited command failed', JSON.stringify(response));
                 return;
             }   
             else{
@@ -299,7 +304,7 @@ io.on('connection', (socket) => {
                 let game_id = Math.floor(1 + Math.random() * 0x100000).toString(16);
                 response = {
                     result:'success',
-                    game_id:game_id,
+                    game_id: game_id,
                     socket_id: requested_user
                 }
                 socket.emit("game_start_response", response);
@@ -378,3 +383,57 @@ io.on('connection', (socket) => {
         serverLog('send_chat_message command succeeded', JSON.stringify(response));
     });
 });
+
+let games = [];
+
+function create_new_game() {
+    let new_game = {};
+    new_game.player_white = {};
+    new_game.player_white.socket = "";
+    new_game.player_white.username = "";
+
+    new_game.player_black = {};
+    new_game.player_black.socket = "";
+    new_game.player_black.username = "";
+
+    var d = new Date();
+    new_game.last_move_time = d.getTime();
+
+    new_game.whose_turn = 'white';
+
+    new_game.board = [
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ','w','b',' ',' ',' '],
+        [' ',' ',' ','b','w',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' '],
+        [' ',' ',' ',' ',' ',' ',' ',' ']
+    ];
+
+    return new_game;
+
+}
+
+function send_game_update(socket,game_id,message){
+
+    /* Check to see if a game with game_id exists*/
+
+    if ((typeof games[game_id] == 'undefined') || (games[game_id] === null)){
+        console.log("No game exists with game_id:"+game_id+". Making a new game for "+ socket.id);
+        games[game_id] = create_new_game();
+    }
+
+     /* Send Game Update*/
+        let payload = {
+            result: 'success',
+            game_id: game_id,
+            game: games[game_id],
+            message: message
+
+        }
+
+        io.of("/").to(game_id).emit('game_update', payload);
+
+}
