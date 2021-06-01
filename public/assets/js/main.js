@@ -202,7 +202,7 @@ socket.on('player_disconnected', (payload) =>{
 
     
 
-    let newHTML = '<p class=\'left_room_response\'>'+payload.username+' left the '+payload.room+'.  (There are '+payload.count+' users in this room)</p>';
+    let newHTML = '<p class=\'left_room_response\'>'+payload.username+' left the chatroom.  (There are '+payload.count+' users in this room)</p>';
     let newNode = $(newHTML);
     newNode.hide();
     $('#messages').prepend(newNode);
@@ -267,12 +267,12 @@ socket.on('game_update', (payload) =>{
     }
 
     /* Update my color */
-    if (socket.id === payload.game.player_white.socket){
-        my_color = 'white';
+    if (socket.id === payload.game.player_pink.socket){
+        my_color = 'pink';
     }
 
-    else if (socket.id === payload.game.player_black.socket){
-        my_color = 'black';
+    else if (socket.id === payload.game.player_blue.socket){
+        my_color = 'blue';
     }
 
     else {
@@ -282,17 +282,17 @@ socket.on('game_update', (payload) =>{
 
     $("#my_color").html('<h3 id="my_color">I am '+my_color+'</h3>');
 
-    let whitesum = 0;
-    let blacksum = 0;
+    let pinksum = 0;
+    let bluesum = 0;
 
     /* Animate changes to the board */
     for (let row = 0; row <8; row++){
         for (let column = 0; column <8; column++){
                 if (board[row][column] === 'w'){
-                    whitesum++;
+                    pinksum++;
                 }
                 else if (board[row][column] === 'b'){
-                    blacksum++;
+                    bluesum++;
                 }
                 /* Changes */
                 if(old_board[row][column] !== board[row][column]){
@@ -373,8 +373,8 @@ socket.on('game_update', (payload) =>{
 
 
     }
-    $("#whitesum").html(whitesum);
-    $("#blacksum").html(blacksum);
+    $("#pinksum").html(pinksum);
+    $("#bluesum").html(bluesum);
     old_board = board;
 
 })
@@ -388,18 +388,6 @@ socket.on('play_token_response', (payload) =>{
         console.log(payload.message);
         return;
     }
-
-    /* Announce with a button to the lobby */
-    let nodeA = $("<div id='game_over'></div>");
-    let nodeB = $("<h1>Game Over</h1>");
-    let nodeC = $("<h2>"+payload.who_won + " won!</h2>");
-    let nodeD = $("<a href='lobby.html?username="+username+"' class='btn btn-lg btn-success' role='button'>Return to lobby </a>");
-    nodeA.append(nodeB);
-    nodeA.append(nodeC);
-    nodeA.append(nodeD);
-    nodeA.hide();
-    $('#game_over').replaceWith(nodeA);
-    nodeA.show("fade",1000);
 })
 
 socket.on('game_over', (payload) =>{
@@ -411,6 +399,17 @@ socket.on('game_over', (payload) =>{
         console.log(payload.message);
         return;
     }
+    /* Announce with a button to the lobby */
+    let nodeA = $("<div id='game_over'></div>");
+    let nodeB = $("<h1>Game Over</h1>");
+    let nodeC = $("<h2>"+payload.who_won + " won!</h2>");
+    let nodeD = $("<a href='lobby.html?username="+username+"' class='btn btn-lg btn-success' role='button'>Return to lobby </a>");
+    nodeA.append(nodeB);
+    nodeA.append(nodeC);
+    nodeA.append(nodeD);
+    nodeA.hide();
+    $('#game_over').replaceWith(nodeA);
+    nodeA.show("fade",1000);
 })
 
 $( () =>{

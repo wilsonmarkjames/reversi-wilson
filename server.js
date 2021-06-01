@@ -476,13 +476,13 @@ io.on('connection', (socket) => {
         }
         socket.emit('play_token_response',response);
 
-        if ( color === 'white') {
+        if ( color === 'pink') {
             game.board[row][column] = 'w';
-            game.whose_turn = 'black';
+            game.whose_turn = 'blue';
         }
-       else if ( color === 'black') {
+       else if ( color === 'blue') {
             game.board[row][column] = 'b';
-            game.whose_turn = 'white';
+            game.whose_turn = 'pink';
         }
 
         send_game_update(socket,game_id,'played a token');
@@ -494,18 +494,18 @@ let games = [];
 
 function create_new_game() {
     let new_game = {};
-    new_game.player_white = {};
-    new_game.player_white.socket = "";
-    new_game.player_white.username = "";
+    new_game.player_pink = {};
+    new_game.player_pink.socket = "";
+    new_game.player_pink.username = "";
 
-    new_game.player_black = {};
-    new_game.player_black.socket = "";
-    new_game.player_black.username = "";
+    new_game.player_blue = {};
+    new_game.player_blue.socket = "";
+    new_game.player_blue.username = "";
 
     var d = new Date();
     new_game.last_move_time = d.getTime();
 
-    new_game.whose_turn = 'white';
+    new_game.whose_turn = 'pink';
 
     new_game.board = [
         [' ',' ',' ',' ',' ',' ',' ',' '],
@@ -537,21 +537,21 @@ function send_game_update(socket,game_id,message){
         const iterator = sockets[Symbol.iterator]();
         if(sockets.size >=1) {
             let first = iterator.next().value;
-            if((games[game_id].player_white.socket != first) &&
-                (games[game_id].player_black.socket !=first)) {
+            if((games[game_id].player_pink.socket != first) &&
+                (games[game_id].player_blue.socket !=first)) {
                     
                 /*Player does not have a color */
-                if (games[game_id].player_white.socket === "") {
-                    /*Player should be white */
-                    console.log("White is assigned to: " + first);
-                    games[game_id].player_white.socket = first;
-                    games[game_id].player_white.username = players[first].username;
+                if (games[game_id].player_pink.socket === "") {
+                    /*Player should be pink */
+                    console.log("pink is assigned to: " + first);
+                    games[game_id].player_pink.socket = first;
+                    games[game_id].player_pink.username = players[first].username;
                 }
-                else if (games[game_id].player_black.socket === "") {
-                    /*Player should be black */
-                    console.log("Black is assigned to: " + first);
-                    games[game_id].player_black.socket = first;
-                    games[game_id].player_black.username = players[first].username;
+                else if (games[game_id].player_blue.socket === "") {
+                    /*Player should be blue */
+                    console.log("blue is assigned to: " + first);
+                    games[game_id].player_blue.socket = first;
+                    games[game_id].player_blue.username = players[first].username;
                 }
 
                 else {
@@ -567,21 +567,21 @@ function send_game_update(socket,game_id,message){
         }
         if(sockets.size >=2) {
             let second = iterator.next().value;
-            if((games[game_id].player_white.socket != second) &&
-                (games[game_id].player_black.socket !=second)) {
+            if((games[game_id].player_pink.socket != second) &&
+                (games[game_id].player_blue.socket !=second)) {
                     
                 /*Player does not have a color */
-                if (games[game_id].player_white.socket === "") {
-                    /*Player should be white */
-                    console.log("White is assigned to: " + second);
-                    games[game_id].player_white.socket = second;
-                    games[game_id].player_white.username = players[second].username;
+                if (games[game_id].player_pink.socket === "") {
+                    /*Player should be pink */
+                    console.log("pink is assigned to: " + second);
+                    games[game_id].player_pink.socket = second;
+                    games[game_id].player_pink.username = players[second].username;
                 }
-                else if (games[game_id].player_black.socket === "") {
-                    /*Player should be black */
-                    console.log("Black is assigned to: " + second);
-                    games[game_id].player_black.socket = second;
-                    games[game_id].player_black.username = players[second].username;
+                else if (games[game_id].player_blue.socket === "") {
+                    /*Player should be blue */
+                    console.log("blue is assigned to: " + second);
+                    games[game_id].player_blue.socket = second;
+                    games[game_id].player_blue.username = players[second].username;
                 }
 
                 else {
