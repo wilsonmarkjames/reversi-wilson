@@ -282,6 +282,16 @@ socket.on('game_update', (payload) =>{
 
     $("#my_color").html('<h3 id="my_color">I am '+my_color+'</h3>');
 
+    if( payload.game.whose_turn === 'pink'){
+        $("#my_color").append('<h4>It is pink\'s turn. </h3>');
+    }
+    else if(payload.game.whose_turn === 'blue'){
+        $("#my_color").append('<h4>It is blue\'s turn. </h4>');
+    }
+    else{
+        $("#my_color").append('<h4>Error do not know whose turn it is</h4>');
+    }
+
     let pinksum = 0;
     let bluesum = 0;
 
@@ -386,6 +396,7 @@ socket.on('play_token_response', (payload) =>{
     }
     if(payload.result === 'fail'){
         console.log(payload.message);
+        alert(payload.message);
         return;
     }
 })

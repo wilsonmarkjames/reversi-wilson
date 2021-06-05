@@ -471,6 +471,35 @@ io.on('connection', (socket) => {
             return;
         }
 
+        /* Make sure the current attempt is by the correct color */
+
+        if (color !== game.whose_turn){
+
+            let response = {
+                result: 'fail',
+                message: 'play_token played the wrong color.  It is not their turn.'
+            }
+            socket.emit('play_token_response',response);
+            serverLog('play_token command failed', JSON.stringify(response));   
+            return;
+
+        }
+
+                /* Make sure the current play is coming from the expected player */
+
+                if (
+                    ((game.whose_turn === 'white') && (game.player_pink.socket != socket.id)) ||
+                    ((game.whose_turn === 'blue') && (game.player_blue.socket != socket.id))
+                    ){
+                    let response = {
+                        result: 'fail',
+                        message: 'play_token played the right color, but by the wrong player.'
+                    }
+                    socket.emit('play_token_response',response);
+                    serverLog('play_token command failed', JSON.stringify(response));  
+                    return;         
+                }
+
         let response = {
             result: 'success'
         }
