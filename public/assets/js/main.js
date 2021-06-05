@@ -298,7 +298,7 @@ socket.on('game_update', (payload) =>{
     /* Animate changes to the board */
     for (let row = 0; row <8; row++){
         for (let column = 0; column <8; column++){
-                if (board[row][column] === 'w'){
+                if (board[row][column] === 'p'){
                     pinksum++;
                 }
                 else if (board[row][column] === 'b'){
@@ -312,7 +312,7 @@ socket.on('game_update', (payload) =>{
                         graphic = "empty.gif";
                         altTag = "empty space";
                     }
-                    else if((old_board[row][column] === '?') && (board[row][column] ==='w')){
+                    else if((old_board[row][column] === '?') && (board[row][column] ==='p')){
                         graphic = "empty_to_pink.gif";
                         altTag = "pink token";
                     }
@@ -320,7 +320,7 @@ socket.on('game_update', (payload) =>{
                         graphic = "empty_to_blue.gif";
                         altTag = "blue token";
                     }
-                    else if((old_board[row][column] === ' ') && (board[row][column] ==='w')){
+                    else if((old_board[row][column] === ' ') && (board[row][column] ==='p')){
                         graphic = "empty_to_pink.gif";
                         altTag = "pink token";
                     }
@@ -328,7 +328,7 @@ socket.on('game_update', (payload) =>{
                         graphic = "empty_to_blue.gif";
                         altTag = "blue token";
                     }
-                    else if((old_board[row][column] === 'w') && (board[row][column] ===' ')){
+                    else if((old_board[row][column] === 'p') && (board[row][column] ===' ')){
                         graphic = "empty.gif";
                         altTag = "empty space";
                     }
@@ -336,15 +336,15 @@ socket.on('game_update', (payload) =>{
                         graphic = "empty.gif";
                         altTag = "empty space";
                     }
-                    else if((old_board[row][column] === 'w') && (board[row][column] ==='b')){
+                    else if((old_board[row][column] === 'p') && (board[row][column] ==='b')){
                         graphic = "pink_to_blue.gif";
                         altTag = "blue token";
                     }
-                    else if((old_board[row][column] === 'b') && (board[row][column] ==='w')){
+                    else if((old_board[row][column] === 'b') && (board[row][column] ==='p')){
                         graphic = "blue_to_pink.gif";
                         altTag = "pink token";
                     }
-                                        else if((old_board[row][column] === 'b') && (board[row][column] ==='w')){
+                                        else if((old_board[row][column] === 'b') && (board[row][column] ==='p')){
                         graphic = "blue_to_pink.gif";
                         altTag = "pink token";
                     }
@@ -357,8 +357,13 @@ socket.on('game_update', (payload) =>{
 
                     $('#'+row+'_'+column).html('<img class="img-fluid" src="assets/images/'+graphic+'?time='+t+'" alt="'+altTag+'" />');
 
+                }
+                /*setup interactivity */
                     $('#'+row+'_'+column).off('click');
-                    if (board[row][column] === ' ') {
+                    $('#'+row+'_'+column).removeClass('hovered_over');
+                   
+                    if(payload.game.whose_turn === my_color){
+                        if(payload.game.legal_moves[row][column] === my_color.substr(0,1)){
                         $('#'+row+'_'+column).addClass('hovered_over'); 
                         $('#'+row+'_'+column).click(((r,c) => {
                             return (() => {
@@ -373,16 +378,13 @@ socket.on('game_update', (payload) =>{
                             });
                         })(row,column));
                     }   
-                    else {
-                        $('#'+row+'_'+column).removeClass('hovered_over');
-                    }
+                
 
-                }
+                }  
+            }
 
         }
 
-
-    }
     $("#pinksum").html(pinksum);
     $("#bluesum").html(bluesum);
     old_board = board;
