@@ -507,11 +507,13 @@ io.on('connection', (socket) => {
 
         if ( color === 'pink') {
             game.board[row][column] = 'p';
+            flip_tokens('p',row,column,game.board);
             game.whose_turn = 'blue';
             game.legal_moves = calculate_legal_moves('b',game.board);
         }
        else if ( color === 'blue') {
             game.board[row][column] = 'b';
+            flip_tokens('b',row,column,game.board);
             game.whose_turn = 'pink';
             game.legal_moves = calculate_legal_moves('p',game.board);
         }
@@ -656,6 +658,48 @@ let legal_moves = [
     }
 
     return legal_moves;  
+}
+
+function flip_line(who,dr,dc,r,c,board) {
+ if ((r + dr < 0) || (r + dr > 7)){
+    return false;       
+}
+if ((c + dc < 0) || (c + dc > 7)){
+    return false;       
+}
+if (board[r+dr][c+dc] === ' '){
+    return false;
+}
+
+if (board[r+dr][c+dc] === who){
+    return true;
+}
+else{
+    if(flip_line(who,dr,dc,r+dr,c+dc,board)){
+        board[r+dr][c+dc] = who;
+        return true;
+    }
+    else{
+        return false;
+    }
+}
+
+}
+
+function flip_tokens(who,row,column,board){
+
+    nw = adjacent_support(who,-1, -1, row, column, board);
+                flip_line(who,-1, 0, row, column, board);
+                flip_line(who,-1, 1, row, column, board);
+
+                flip_line(who,0, -1, row, column, board);
+                flip_line(who,0, 1, row, column, board);
+
+                flip_line(who,1,0,row,column,board);
+                flip_line(who,1, -1, row, column, board);
+                flip_line(who,1, 1, row, column, board);
+
+
 }
 
 function send_game_update(socket,game_id,message){
