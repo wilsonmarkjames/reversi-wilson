@@ -791,22 +791,42 @@ function send_game_update(socket,game_id,message){
 
           /* Check if the game is over*/
 
-          let count =0;
+          let legal_moves =0;
+          let pinksum = 0;
+          let bluesum = 0;
+
           for (let row = 0; row<8; row++){
             for (let column = 0; column<8; column++){
-                if(games[game_id].board[row][column] != ' '){
-                    count++;
+                if(games[game_id].legal_moves[row][column] !== ' '){
+                    legal_moves++;
+                }
+                if(games[game_id].board[row][column] === 'p'){
+                    pinksum++;
+                }
+                if(games[game_id].board[row][column] === 'b'){
+                    bluesum++;
                 }
             }
 
           }
 
-        if(count === 64 ) {
+        if(legal_moves === 0 ) {
+            let winner = "Tie Game";
+            if(pinksum > bluesum){
+                winner = "pink";
+
+            }
+
+            if(pinksum < bluesum){
+                winner = "blue";
+
+            }
+
             let payload = {
                 result: 'success',
                 game_id: game_id,
                 game: games[game_id],
-                who_won: 'everyone',
+                who_won: winner
             }
         io.in(game_id).emit('game_over',payload);
 
